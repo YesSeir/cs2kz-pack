@@ -1,1 +1,1 @@
-This is updated version of [https://github.com/zer0k-z/cs2kz-mapping](Zer0k-z) version
+This is updated version of Zer0k-z [cs2kz-mapping](https://github.com/zer0k-z/cs2kz-mapping) pack
