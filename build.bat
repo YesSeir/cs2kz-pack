@@ -1,7 +1,4 @@
 pyinstaller --onefile verify.py
-pyinstaller --onefile setup-dedicated.py
-pyinstaller --onefile run-dedicated.py
-pyinstaller --onefile run-insecure.py
-pyinstaller --onefile setup-listen.py
-pyinstaller --onefile run-listen.py
-pyinstaller --onefile run-mapping.py
+pyinstaller --onefile setup.py
+pyinstaller --onefile server.py
+pyinstaller --onefile game.py
