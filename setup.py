@@ -131,36 +131,71 @@ def extract_zip(zip_path: str, extract_to: str):
 
 def download_and_extract_metamod(cs2_dir: str):
     try:
-        latest_mm_url = "https://mms.alliedmods.net/mmsdrop/2.0/mmsource-latest-windows"
-        response = requests.get(latest_mm_url)
+        repo = "alliedmodders/metamod-source"
+        api_url = f"https://api.github.com/repos/{repo}/releases"
+        
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "CS2KZ-Setup/1.0"
+        }
+        # Если у вас есть GitHub токен для увеличения лимитов, можно добавить:
+        # headers["Authorization"] = "token YOUR_TOKEN"
+        
+        print("Fetching Metamod releases from GitHub API...")
+        response = requests.get(api_url, headers=headers, timeout=30)
         response.raise_for_status()
         
-        mm_filename = response.text.strip()
-        mm_download_url = f"https://mms.alliedmods.net/mmsdrop/2.0/{mm_filename}"
-
-        archive_path = Path(os.getcwd()) / mm_filename
-
-        print(f"Downloading Metamod from {mm_download_url}...")
-        with requests.get(mm_download_url, stream=True) as r:
-            r.raise_for_status()
-            with open(archive_path, 'wb') as f:
-                f.write(r.content)
-        print("Download complete.")
-
-        output_dir_path = os.path.join(cs2_dir, 'game', 'csgo')
-        print(f"Extracting {archive_path}...")
+        releases = response.json()
+        download_url = None
+        asset_name = None
         
-        extract_zip(str(archive_path), output_dir_path)
-
-        print(f"Removing temporary file: {archive_path}")
-        os.remove(archive_path)
-
-        print(f"Metamod has been successfully extracted.")
-
+        # Перебираем релизы, ищем prerelease
+        for release in releases:
+            # Берём только prerelease (как в C#: if (!release.prerelease) continue;)
+            if not release.get("prerelease", False):
+                continue
+            
+            assets = release.get("assets", [])
+            for asset in assets:
+                name = asset.get("name", "")
+                # Ищем Windows-архив (имя содержит "windows" и заканчивается на .zip)
+                if "windows" in name.lower() and name.lower().endswith(".zip"):
+                    download_url = asset.get("browser_download_url")
+                    asset_name = name
+                    break
+            
+            if download_url:
+                break
+        
+        if not download_url:
+            raise Exception("Metamod Windows prerelease asset not found")
+        
+        print(f"Found Metamod prerelease asset: {asset_name}")
+        
+        # Скачиваем во временный файл
+        zip_path = os.path.join(os.getcwd(), asset_name)
+        print(f"Downloading from {download_url}...")
+        with requests.get(download_url, headers=headers, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            with open(zip_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
+        print("Download complete.")
+        
+        # Распаковываем в game/csgo
+        extract_to = os.path.join(cs2_dir, "game", "csgo")
+        print(f"Extracting to {extract_to}...")
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+        
+        # Удаляем ZIP
+        os.remove(zip_path)
+        print("Metamod successfully installed.")
+        
     except requests.exceptions.RequestException as e:
         print(f"Error downloading Metamod: {e}")
     except zipfile.BadZipFile as e:
-        print(f"Error extracting Metamod archive: {e}. Ensure the file is a valid ZIP archive.")
+        print(f"Error extracting Metamod archive: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
