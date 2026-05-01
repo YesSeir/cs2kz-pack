@@ -138,8 +138,6 @@ def download_and_extract_metamod(cs2_dir: str):
             "Accept": "application/vnd.github.v3+json",
             "User-Agent": "CS2KZ-Setup/1.0"
         }
-        # Если у вас есть GitHub токен для увеличения лимитов, можно добавить:
-        # headers["Authorization"] = "token YOUR_TOKEN"
         
         print("Fetching Metamod releases from GitHub API...")
         response = requests.get(api_url, headers=headers, timeout=30)
@@ -149,16 +147,13 @@ def download_and_extract_metamod(cs2_dir: str):
         download_url = None
         asset_name = None
         
-        # Перебираем релизы, ищем prerelease
         for release in releases:
-            # Берём только prerelease (как в C#: if (!release.prerelease) continue;)
             if not release.get("prerelease", False):
                 continue
             
             assets = release.get("assets", [])
             for asset in assets:
                 name = asset.get("name", "")
-                # Ищем Windows-архив (имя содержит "windows" и заканчивается на .zip)
                 if "windows" in name.lower() and name.lower().endswith(".zip"):
                     download_url = asset.get("browser_download_url")
                     asset_name = name
@@ -172,7 +167,6 @@ def download_and_extract_metamod(cs2_dir: str):
         
         print(f"Found Metamod prerelease asset: {asset_name}")
         
-        # Скачиваем во временный файл
         zip_path = os.path.join(os.getcwd(), asset_name)
         print(f"Downloading from {download_url}...")
         with requests.get(download_url, headers=headers, stream=True, timeout=60) as r:
@@ -181,14 +175,12 @@ def download_and_extract_metamod(cs2_dir: str):
                 for chunk in r.iter_content(chunk_size=8192):
                     f.write(chunk)
         print("Download complete.")
-        
-        # Распаковываем в game/csgo
+
         extract_to = os.path.join(cs2_dir, "game", "csgo")
         print(f"Extracting to {extract_to}...")
         with zipfile.ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_to)
         
-        # Удаляем ZIP
         os.remove(zip_path)
         print("Metamod successfully installed.")
         
@@ -241,7 +233,6 @@ def download_cs2kz(cs2_dir: str):
     else:
         print(f"Warning: {zip_name} not found in release assets")
 
-    # Модифицируем конфиг ТОЛЬКО при первой установке (не при upgrade)
     if not is_upgrade:
         create_or_modify_cs2kz_config(cs2_dir)
     else:
@@ -375,7 +366,6 @@ def download_multiaddon_manager(cs2_dir: str):
     print(f"Downloading MultiAddonManager...")
     
     try:
-        # Получаем информацию о последнем релизе
         response = requests.get("https://api.github.com/repos/Source2ZE/MultiAddonManager/releases/latest")
         if response.status_code != 200:
             raise Exception(f"Failed to fetch latest release: {response.status_code} - {response.text}")
@@ -385,7 +375,6 @@ def download_multiaddon_manager(cs2_dir: str):
         if "assets" not in release_data or len(release_data["assets"]) == 0:
             raise Exception("No assets found in the latest MultiAddonManager release.")
         
-        # Ищем файл с Windows версией
         found = False
         for asset in release_data["assets"]:
             if "windows" in asset["name"].lower():
@@ -411,7 +400,6 @@ def download_multiaddon_manager(cs2_dir: str):
             print("Warning: No Windows asset found in MultiAddonManager release")
             return
         
-        # Модифицируем конфиг после установки
         modify_multiaddon_manager_config(cs2_dir)
         
     except Exception as e:
@@ -426,7 +414,6 @@ def modify_multiaddon_manager_config(cs2_dir: str):
     with open(config_path, 'r', encoding='utf-8') as f:
         content = f.read()
     
-    # Change mm_extra_addons
     pattern = r'(mm_extra_addons\s+")([^"]*)(")'
     replacement = r'\g<1>3469155349,3610991685\g<3>'
     
@@ -437,7 +424,6 @@ def modify_multiaddon_manager_config(cs2_dir: str):
         new_line = 'mm_extra_addons 				"3469155349,3610991685"'
         new_content = content.replace(old_line, new_line)
     
-    # Change mm_extra_addons_timeout from 10 to 3600
     pattern = r'(mm_extra_addons_timeout\s+)(\d+)'
     replacement = r'\g<1>3600'
     
@@ -448,7 +434,6 @@ def modify_multiaddon_manager_config(cs2_dir: str):
     if 'mm_extra_addons_timeout 10' in new_content:
         new_content = new_content.replace('mm_extra_addons_timeout 10', 'mm_extra_addons_timeout 3600')
     
-    # Change mm_block_disconnect_messages from 0 to 1
     pattern = r'(mm_block_disconnect_messages\s+)(\d+)'
     replacement = r'\g<1>1'
     
@@ -744,7 +729,7 @@ def setup_rockthevote(cs2_dir: str):
 
 def generate_maplist_for_rockthevote(cs2_dir: str):
     """Generate/update maplist.txt for RockTheVote from Steam collection."""
-    collection_id = "3587380938"  # ID коллекции KZ карт
+    collection_id = "3587380938" 
     
     output_dir = os.path.join(cs2_dir, "game", "csgo", "addons", "counterstrikesharp", "plugins", "RockTheVote")
     maplist_path = os.path.join(output_dir, "maplist.txt")
@@ -763,15 +748,13 @@ def generate_maplist_for_rockthevote(cs2_dir: str):
         
         print(f"[Maplist] Processing {len(items)} maps from Steam...")
         
-        # Создаем словарь с новыми картами
         new_maps = {}
         for item in items:
             title = item.get("title", "").strip()
             fid = item.get("publishedfileid", "")
             if title and fid:
                 new_maps[fid] = f"{title}:{fid}"
-        
-        # Читаем существующий maplist.txt если есть
+                
         existing_maps = {}
         existing_lines = []
         
@@ -780,7 +763,6 @@ def generate_maplist_for_rockthevote(cs2_dir: str):
             with open(maplist_path, 'r', encoding='utf-8') as f:
                 existing_lines = [line.strip() for line in f.readlines() if line.strip()]
             
-            # Парсим существующие записи
             for line in existing_lines:
                 if ':' in line:
                     parts = line.split(':', 1)
@@ -788,13 +770,10 @@ def generate_maplist_for_rockthevote(cs2_dir: str):
                         fid = parts[1]
                         existing_maps[fid] = line
                 else:
-                    # Обычные карты без workshop ID сохраняем как есть
                     existing_maps[line] = line
         
-        # Объединяем существующие и новые карты
         merged_maps = existing_maps.copy()
         
-        # Счетчики для статистики
         added_count = 0
         updated_count = 0
         
@@ -804,15 +783,12 @@ def generate_maplist_for_rockthevote(cs2_dir: str):
                 added_count += 1
                 print(f"[Maplist] New map added: {line}")
             elif existing_maps[fid] != line:
-                # Если название изменилось (маловероятно, но на всякий случай)
                 merged_maps[fid] = line
                 updated_count += 1
                 print(f"[Maplist] Map updated: {line}")
         
-        # Сортируем по названию
         sorted_maps = sorted(merged_maps.values())
         
-        # Записываем обновленный файл
         os.makedirs(output_dir, exist_ok=True)
         with open(maplist_path, 'w', encoding='utf-8') as f:
             f.write("\n".join(sorted_maps))
@@ -826,7 +802,6 @@ def generate_maplist_for_rockthevote(cs2_dir: str):
         
     except Exception as e:
         print(f"[Maplist] Warning: Failed to generate maplist: {e}")
-        # Создаём базовый maplist с дефолтными картами если вообще нет файла
         if not os.path.exists(maplist_path):
             print(f"[Maplist] Creating fallback maplist...")
             os.makedirs(output_dir, exist_ok=True)
@@ -838,7 +813,6 @@ kz_victoria:3086304337"""
             print(f"[Maplist] Created fallback maplist: {maplist_path}")
 
 def update_maplist(cs2_dir: str):
-    """Отдельная функция для обновления maplist без переустановки всего"""
     collection_id = "3587380938"
     output_dir = os.path.join(cs2_dir, "game", "csgo", "addons", "counterstrikesharp", "plugins", "RockTheVote")
     
