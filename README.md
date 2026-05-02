@@ -1,4 +1,4 @@
-This is updated version of Zer0k-z [cs2kz-mapping](https://github.com/zer0k-z/cs2kz-mapping) pack
+This is updated version of zer0k-z [cs2kz-mapping](https://github.com/zer0k-z/cs2kz-mapping) pack
 
 Instructions:
 1. Follow the link: [cs2kz-pack](https://github.com/YesSeir/cs2kz-pack/releases)
