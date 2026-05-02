@@ -11,7 +11,11 @@ Instructions:
 8. It is recommended to close the `server console` with the `quit` command
 
 The build includes all the key plugins, including:
-1. [cs2kz-metamod](https://github.com/KZGlobalTeam/cs2kz-metamod) plugin
-2. [sql_mm](https://github.com/zer0k-z/sql_mm) plugin for saving times
-3. [MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager) puts the same checkpoint menu as on CyberShock
-4. [Counterstrikesharp](https://github.com/roflmuffin/CounterStrikeSharp) for most plugin operation
+1. [metamod](https://github.com/alliedmodders/metamod-source) nothing will work without it
+2. [cs2kz-metamod](https://github.com/KZGlobalTeam/cs2kz-metamod) cs2kz plugin
+3. [sql_mm](https://github.com/zer0k-z/sql_mm) plugin for saving times
+4. [MultiAddonManager](https://github.com/Source2ZE/MultiAddonManager) add checkpoints menu and puts the same checkpoint menu as on CYBERSHOKE
+5. [Counterstrikesharp](https://github.com/roflmuffin/CounterStrikeSharp) support C# plugins
+6. [RockTheVote](https://github.com/M-archand/cs2-rockthevote) !rtv, !nominate (!nom) plugin
+7. Automatically generate a list of maps from the [collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3587380938) in Steam
+
