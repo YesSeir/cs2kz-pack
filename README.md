@@ -5,7 +5,7 @@ Instructions:
 2. Download all the `.exe` files
 3. Run `verify`, `setup`, `server`, and `game` in turn, and join via `connect :`
 4. In subsequent runs, you can only run `server` and `game`
-5. You can nominate a map via `!nom map name`, and set it via `!rtv`
+5. You can nominate a map via `!nom mapname`, and set it via `!rtv`
 6. If there is an update for the plugins, run the `setup` file before the game
 7. If there is an `error when starting CS`, run `verify`
 8. It is recommended to close the `server console` with the `quit` command
