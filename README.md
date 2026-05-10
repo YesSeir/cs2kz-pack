@@ -3,7 +3,7 @@ This is updated version of zer0k-z [cs2kz-mapping](https://github.com/zer0k-z/cs
 Instructions:
 1. Follow the link: [cs2kz-pack](https://github.com/YesSeir/cs2kz-pack/releases)
 2. Download all the `.exe` files
-3. Run `verify`, `setup`, `server`, and `game` in turn, and join via `connect :`
+3. Run `verify`, `setup` or `setup_nulls [if you using null binds]`, `server`, and `game` in turn, and join via `connect :`
 4. In subsequent runs, you can only run `server` and `game`
 5. You can nominate a map via `!nom`, and set it via `!rtv`
 6. If there is an update for the plugins, run the `setup` file before the game
@@ -18,4 +18,5 @@ The build includes all the key plugins, including:
 5. [Counterstrikesharp](https://github.com/roflmuffin/CounterStrikeSharp) support C# plugins
 6. [RockTheVote](https://github.com/M-archand/cs2-rockthevote) !rtv, !nominate (!nom) plugin
 7. Automatically generate a list of maps from the [collection](https://steamcommunity.com/sharedfiles/filedetails/?id=3587380938) in Steam
+8. A plugin that allows you to use binds [AllowNulls](https://github.com/YesSeir/AllowNulls). But you can't use them with a global key anyway
 
