@@ -36,14 +36,26 @@ def find_cs2_library_path(libraryfolders_path):
 
 def get_cs2_path():
     steam_path = get_steam_directory()
-    if steam_path is None:
+    if steam_path is not None:
+        library_path = find_cs2_library_path(os.path.join(steam_path, "steamapps", "libraryfolders.vdf"))
+        if library_path is not None:
+            manifest_path = os.path.join(library_path, 'steamapps', 'appmanifest_730.acf')
+            if os.path.exists(manifest_path):
+                with open(manifest_path, 'r', encoding='utf-8') as file:
+                    installdir = vdf.load(file).get('AppState', {}).get('installdir')
+                    if installdir:
+                        full_path = os.path.join(library_path, 'steamapps', 'common', installdir)
+                        if os.path.exists(full_path):
+                            return full_path
+
+    # Если ничего не нашли – запрашиваем у пользователя
+    print("Couldn't find cs2 automatically")
+    manual_path = input("Enter the full path to the 'Counter Strike folder': ").strip('"')
+    if os.path.exists(manual_path):
+        return manual_path
+    else:
+        print(f"Указанный путь не существует: {manual_path}")
         return None
-    library_path = find_cs2_library_path(os.path.join(steam_path, "steamapps", "libraryfolders.vdf"))
-    if library_path is None:
-        return None
-    with open(os.path.join(library_path, 'steamapps', 'appmanifest_730.acf'), 'r', encoding='utf-8') as file:
-        return os.path.join(library_path, 'steamapps', 'common', vdf.load(file)['AppState']['installdir'])
-    print("Failed to get CS2 path.")
 
 def modify_gameinfo(gameinfo_path, core_gameinfo_path):
     with open(gameinfo_path, 'r') as f:

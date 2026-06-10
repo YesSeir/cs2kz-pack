@@ -902,7 +902,7 @@ def setup_metamod_content_path(path: str):
 path = get_cs2_path()
 if path is None:
     print("Failed to get CS2 path.")
-    exit(1)
+    sys.exit(1)
 
 print(f"Setting up CS2KZ in {path}...")
 
