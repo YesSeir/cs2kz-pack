@@ -612,7 +612,7 @@ def setup_rockthevote(cs2_dir: str):
     plugins_path = os.path.join(cs2_dir, "game", "csgo", "addons", "counterstrikesharp", "plugins")
     
     try:
-        download_asset_by_url(cs2_dir, asset_url, plugins_path, "RockTheVote", "RockTheVote")
+        download_asset_by_url(cs2_dir, asset_url, plugins_path, "RockTheVote")
     except Exception as e:
         print(f"Warning: Failed to download RockTheVote: {e}")
         return
